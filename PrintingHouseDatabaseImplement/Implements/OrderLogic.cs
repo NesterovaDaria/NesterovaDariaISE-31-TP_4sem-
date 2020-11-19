@@ -13,69 +13,73 @@ namespace PrintingHouseDatabaseImplement.Implements
 {
     public class OrderLogic : IOrderLogic
     {
+        //private readonly PrintingHouseDatabase source;
         public void CreateOrUpdate(OrderBindingModel model)
         {
+            Console.WriteLine("Ordtr logic fio= " + model.ClientFIO);
             using (var context = new PrintingHouseDatabase())
             {
-                Console.WriteLine("Id= " + model.Id);
-                Order element;
+                Order order;
                 if (model.Id.HasValue)
                 {
-                    element = context.Orders.FirstOrDefault(rec => rec.Id == model.Id);
-                    if (element == null)
-                    {
+                    order = context.Orders.ToList().FirstOrDefault(rec => rec.Id == model.Id);
+                    if (order == null)
                         throw new Exception("Элемент не найден");
-                    }
                 }
                 else
                 {
-                    element = new Order();
-                    context.Orders.Add(element);
+                    order = new Order();
+                    context.Orders.Add(order);
                 }
-                element.PrintingProductId = model.PrintingProductId == 0 ? element.PrintingProductId : model.PrintingProductId;
-                element.Count = model.Count;
-                element.Sum = model.Sum;
-                element.Status = model.Status;
-                element.DateCreate = model.DateCreate;
-                element.DateImplement = model.DateImplement;
+                order.PrintingProductId = model.PrintingProductId;
+                order.ClientFIO = model.ClientFIO;
+                order.ClientId = model.ClientId;
+                order.Count = model.Count;
+                order.DateCreate = model.DateCreate;
+                order.DateImplement = model.DateImplement;
+                order.Status = model.Status;
+                order.Sum = model.Sum;
                 context.SaveChanges();
             }
         }
+
         public void Delete(OrderBindingModel model)
         {
             using (var context = new PrintingHouseDatabase())
             {
-                Order element = context.Orders.FirstOrDefault(rec => rec.Id == model.Id);
-                if (element != null)
+                Order order = context.Orders.FirstOrDefault(rec => rec.Id == model.Id);
+                if (order != null)
                 {
-                    context.Orders.Remove(element);
-                    context.SaveChanges();
+                    context.Orders.Remove(order);
                 }
                 else
                 {
                     throw new Exception("Элемент не найден");
                 }
+                context.SaveChanges();
             }
         }
+
         public List<OrderViewModel> Read(OrderBindingModel model)
         {
             using (var context = new PrintingHouseDatabase())
             {
-                return context.Orders
-                .Include(rec => rec.PrintingProduct)
-                .Where(rec => model == null || rec.Id == model.Id || (rec.DateCreate>=model.DateFrom && rec.DateCreate<=model.DateTo))
-                .Select(rec => new OrderViewModel
+                return context.Orders.Where(rec => model == null || rec.Id == model.Id || (rec.DateCreate >= model.DateFrom)
+                && (rec.DateCreate <= model.DateTo) || model.ClientId == rec.ClientId)
+                .Include(ord => ord.PrintingProduct)
+                .Select(rec => new OrderViewModel()
                 {
                     Id = rec.Id,
-                    PrintingProductId=rec.PrintingProductId,
+                    PrintingProductId = rec.PrintingProductId,
+                    ClientFIO = rec.ClientFIO,
+                    ClientId = rec.ClientId,
                     PrintingProductName = rec.PrintingProduct.PrintingProductName,
                     Count = rec.Count,
-                    Sum = rec.Sum,
-                    Status = rec.Status,
                     DateCreate = rec.DateCreate,
-                    DateImplement = rec.DateImplement
-                })
-                .ToList();
+                    DateImplement = rec.DateImplement,
+                    Status = rec.Status,
+                    Sum = rec.Sum
+                }).ToList();
             }
         }
     }

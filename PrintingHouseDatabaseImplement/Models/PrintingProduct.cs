@@ -14,7 +14,7 @@ namespace PrintingHouseDatabaseImplement.Models
         public string PrintingProductName { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public virtual List<PrintingComponent> PrintingProductComponent { get; set; }
+        public virtual PrintingComponent PrintingComponent { get; set; }
         public virtual List<Order> Orders { get; set; }
     }
 }

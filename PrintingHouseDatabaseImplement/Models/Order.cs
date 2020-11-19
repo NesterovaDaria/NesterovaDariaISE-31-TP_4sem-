@@ -11,7 +11,10 @@ namespace PrintingHouseDatabaseImplement.Models
     public class Order
     {
         public int Id { get; set; }
+        public int ClientId { get; set; }
         public int PrintingProductId { get; set; }
+        [Required]
+        public string ClientFIO { set; get; }
         [Required]
         public int Count { get; set; }
         [Required]
@@ -22,5 +25,6 @@ namespace PrintingHouseDatabaseImplement.Models
         public DateTime DateCreate { get; set; }
         public DateTime? DateImplement { get; set; }
         public PrintingProduct PrintingProduct { get; set; }
+        public Client Client { get; set; }
     }
 }

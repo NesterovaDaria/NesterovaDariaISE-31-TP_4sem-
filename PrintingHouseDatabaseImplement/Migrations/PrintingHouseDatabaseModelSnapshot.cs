@@ -19,6 +19,30 @@ namespace PrintingHouseDatabaseImplement.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("PrintingHouseDatabaseImplement.Models.Client", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FIO")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clients");
+                });
+
             modelBuilder.Entity("PrintingHouseDatabaseImplement.Models.Component", b =>
                 {
                     b.Property<int>("Id")
@@ -42,6 +66,13 @@ namespace PrintingHouseDatabaseImplement.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ClientFIO")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
@@ -61,6 +92,8 @@ namespace PrintingHouseDatabaseImplement.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("PrintingProductId");
 
@@ -87,9 +120,10 @@ namespace PrintingHouseDatabaseImplement.Migrations
 
                     b.HasIndex("ComponentId");
 
-                    b.HasIndex("PrintingProductId");
+                    b.HasIndex("PrintingProductId")
+                        .IsUnique();
 
-                    b.ToTable("PrintingProductComponents");
+                    b.ToTable("PrintingComponents");
                 });
 
             modelBuilder.Entity("PrintingHouseDatabaseImplement.Models.PrintingProduct", b =>
@@ -113,6 +147,12 @@ namespace PrintingHouseDatabaseImplement.Migrations
 
             modelBuilder.Entity("PrintingHouseDatabaseImplement.Models.Order", b =>
                 {
+                    b.HasOne("PrintingHouseDatabaseImplement.Models.Client", "Client")
+                        .WithMany("Orders")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PrintingHouseDatabaseImplement.Models.PrintingProduct", "PrintingProduct")
                         .WithMany("Orders")
                         .HasForeignKey("PrintingProductId")
@@ -123,14 +163,14 @@ namespace PrintingHouseDatabaseImplement.Migrations
             modelBuilder.Entity("PrintingHouseDatabaseImplement.Models.PrintingComponent", b =>
                 {
                     b.HasOne("PrintingHouseDatabaseImplement.Models.Component", "Component")
-                        .WithMany("PrintingProductComponents")
+                        .WithMany("PrintingComponents")
                         .HasForeignKey("ComponentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PrintingHouseDatabaseImplement.Models.PrintingProduct", "PrintingProduct")
-                        .WithMany("PrintingProductComponent")
-                        .HasForeignKey("PrintingProductId")
+                        .WithOne("PrintingComponent")
+                        .HasForeignKey("PrintingHouseDatabaseImplement.Models.PrintingComponent", "PrintingProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

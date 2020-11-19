@@ -22,7 +22,7 @@ namespace PrintingHouseDatabaseImplement.Implements
                         PrintingProduct element = context.PrintingProducts.FirstOrDefault(rec => rec.PrintingProductName == model.PrintingProductName && rec.Id != model.Id);
                         if (element != null)
                         {
-                            throw new Exception("Уже есть изделие с таким названием");
+                            throw new Exception("Уже есть корабль с таким названием");
                         }
                         if (model.Id.HasValue)
                         {
@@ -44,10 +44,10 @@ namespace PrintingHouseDatabaseImplement.Implements
                         context.SaveChanges();
                         if (model.Id.HasValue)
                         {
-                            var printingProductComponents = context.PrintingProductComponents.Where(rec => rec.PrintingProductId == model.Id.Value).ToList();
-                            context.PrintingProductComponents.RemoveRange(printingProductComponents.Where(rec => !model.PrintingComponents.ContainsKey(rec.ComponentId)).ToList());
+                            var printingComponents = context.PrintingComponents.Where(rec => rec.PrintingProductId == model.Id.Value).ToList();
+                            context.PrintingComponents.RemoveRange(printingComponents.Where(rec => !model.PrintingComponents.ContainsKey(rec.ComponentId)).ToList());
                             context.SaveChanges();
-                            foreach (var updateComponent in printingProductComponents)
+                            foreach (var updateComponent in printingComponents)
                             {
                                 updateComponent.Count =
                                 model.PrintingComponents[updateComponent.ComponentId].Item2;
@@ -57,7 +57,7 @@ namespace PrintingHouseDatabaseImplement.Implements
                         }
                         foreach (var pc in model.PrintingComponents)
                         {
-                            context.PrintingProductComponents.Add(new PrintingComponent
+                            context.PrintingComponents.Add(new PrintingComponent
                             {
                                 PrintingProductId = element.Id,
                                 ComponentId = pc.Key,
@@ -83,7 +83,7 @@ namespace PrintingHouseDatabaseImplement.Implements
                 {
                     try
                     {
-                        context.PrintingProductComponents.RemoveRange(context.PrintingProductComponents.Where(rec => rec.PrintingProductId == model.Id));
+                        context.PrintingComponents.RemoveRange(context.PrintingComponents.Where(rec => rec.PrintingProductId == model.Id));
                         PrintingProduct element = context.PrintingProducts.FirstOrDefault(rec => rec.Id == model.Id);
                         if (element != null)
                         {
@@ -116,11 +116,12 @@ namespace PrintingHouseDatabaseImplement.Implements
                     Id = rec.Id,
                     PrintingProductName = rec.PrintingProductName,
                     Price = rec.Price,
-                    PrintingComponents = context.PrintingProductComponents
+                    PrintingComponents = context.PrintingComponents
                 .Include(recPC => recPC.Component)
                 .Where(recPC => recPC.PrintingProductId == rec.Id)
                 .ToDictionary(recPC => recPC.ComponentId, recPC =>
-                (recPC.Component?.ComponentName, recPC.Count))
+                //(recPC.Component?.ComponentName, recPC.Count))
+                (recPC.Component.ComponentName, recPC.Count))
                 })
                 .ToList();
             }

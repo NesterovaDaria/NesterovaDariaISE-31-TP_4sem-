@@ -11,6 +11,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PrintingHouseBusinessLogic\PrintingHouseBusinessLogic.csproj" />
+    <ProjectReference Include="..\PrintingHouseClientView\PrintingHouseClientView.csproj" />
+    <ProjectReference Include="..\PrintingHouseDatabaseImplement\PrintingHouseDatabaseImplement.csproj" />
+    <ProjectReference Include="..\PrintingHouseFileImplement\PrintingHouseFileImplement.csproj" />
+    <ProjectReference Include="..\PrintingHouseView\PrintingHouseView.csproj" />
   </ItemGroup>
 
 </Project>
