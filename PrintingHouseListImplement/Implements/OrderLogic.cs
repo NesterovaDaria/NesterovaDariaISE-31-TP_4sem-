@@ -4,33 +4,34 @@ using PrintingHouseBusinessLogic.ViewModels;
 using PrintingHouseListImplement.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace PrintingHouseListImplement.Implements
 {
     public class OrderLogic : IOrderLogic
     {
-
         private readonly DataListSingleton source;
+
         public OrderLogic()
         {
             source = DataListSingleton.GetInstance();
         }
+
         public void CreateOrUpdate(OrderBindingModel model)
         {
             Order tempOrder = model.Id.HasValue ? null : new Order
             {
                 Id = 1
             };
-            foreach (var Order in source.Orders)
+            foreach (var order in source.Orders)
             {
-                if (!model.Id.HasValue && Order.Id >= tempOrder.Id)
+                if (!model.Id.HasValue && order.Id >= tempOrder.Id)
                 {
-                    tempOrder.Id = Order.Id + 1;
+                    tempOrder.Id = order.Id + 1;
                 }
-                else if (model.Id.HasValue && Order.Id == model.Id)
+                else if (model.Id.HasValue && order.Id == model.Id)
                 {
-                    tempOrder = Order;
+                    tempOrder = order;
                 }
             }
             if (model.Id.HasValue)
@@ -46,6 +47,7 @@ namespace PrintingHouseListImplement.Implements
                 source.Orders.Add(CreateModel(model, tempOrder));
             }
         }
+
         public void Delete(OrderBindingModel model)
         {
             for (int i = 0; i < source.Orders.Count; ++i)
@@ -58,54 +60,54 @@ namespace PrintingHouseListImplement.Implements
             }
             throw new Exception("Элемент не найден");
         }
+
         public List<OrderViewModel> Read(OrderBindingModel model)
         {
             List<OrderViewModel> result = new List<OrderViewModel>();
-            foreach (var Order in source.Orders)
+            foreach (var order in source.Orders)
             {
                 if (model != null)
                 {
-                    if (Order.Id == model.Id)
+                    if (order.Id == model.Id && order.ClientId == model.ClientId)
                     {
-                        result.Add(CreateViewModel(Order));
+                        result.Add(CreateViewModel(order));
                         break;
                     }
                     continue;
                 }
-                result.Add(CreateViewModel(Order));
+                result.Add(CreateViewModel(order));
             }
             return result;
         }
-        private Order CreateModel(OrderBindingModel model, Order Order)
+
+        private Order CreateModel(OrderBindingModel model, Order order)
         {
-            Order.PrintingProductId = model.PrintingProductId == 0 ? Order.PrintingProductId : model.PrintingProductId;
-            Order.Count = model.Count;
-            Order.Sum = model.Sum;
-            Order.Status = model.Status;
-            Order.DateCreate = model.DateCreate;
-            Order.DateImplement = model.DateImplement;
-            return Order;
+            order.Count = model.Count;
+            order.ClientId = model.ClientId;
+            order.ClientFIO = model.ClientFIO;
+            order.DateCreate = model.DateCreate;
+            order.DateImplement = model.DateImplement;
+            order.PrintingProductId = model.PrintingProductId;
+            order.Status = model.Status;
+            order.Sum = model.Sum;
+            return order;
         }
-        private OrderViewModel CreateViewModel(Order Order)
+
+        private OrderViewModel CreateViewModel(Order order)
         {
-            string PrintingProductName = "";
-            for (int j = 0; j < source.PrintingProducts.Count; ++j)
-            {
-                if (source.PrintingProducts[j].Id == Order.PrintingProductId)
-                {
-                    PrintingProductName = source.PrintingProducts[j].PrintingProductName;
-                    break;
-                }
-            }
+            var printingProductName = source.PrintingProducts.FirstOrDefault((n) => n.Id == order.PrintingProductId).PrintingProductName;
             return new OrderViewModel
             {
-                Id = Order.Id,
-                PrintingProductName = PrintingProductName,
-                Count = Order.Count,
-                Sum = Order.Sum,
-                Status = Order.Status,
-                DateCreate = Order.DateCreate,
-                DateImplement = Order.DateImplement
+                Id = order.Id,
+                Count = order.Count,
+                ClientId = order.ClientId,
+                ClientFIO = order.ClientFIO,
+                DateCreate = order.DateCreate,
+                DateImplement = order.DateImplement,
+                PrintingProductName = printingProductName,
+                PrintingProductId = order.PrintingProductId,
+                Status = order.Status,
+                Sum = order.Sum
             };
         }
     }

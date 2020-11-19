@@ -43,6 +43,7 @@ namespace PrintingHouseView
                     dataGridViewMain.DataSource = list;
                     dataGridViewMain.Columns[0].Visible = false;
                     dataGridViewMain.Columns[1].Visible = false;
+                    dataGridViewMain.Columns[2].Visible = false;
                     dataGridViewMain.Columns[7].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
@@ -165,6 +166,12 @@ namespace PrintingHouseView
                    MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void списокКлиентовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormClients>();
+            form.ShowDialog();
         }
     }
 }

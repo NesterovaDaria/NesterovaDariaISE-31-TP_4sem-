@@ -14,6 +14,6 @@ namespace PrintingHouseDatabaseImplement.Models
         [Required]
         public string ComponentName { get; set; }
         [ForeignKey("ComponentId")]
-        public virtual List<PrintingComponent> PrintingProductComponents { get; set; }
+        public virtual List<PrintingComponent> PrintingComponents { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using PrintingHouseBusinessLogic.Interfaces;
 using PrintingHouseBusinessLogic.ViewModels;
 using PrintingHouseFileImplement.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,78 +18,136 @@ namespace PrintingHouseFileImplement.Implements
         }
         public void CreateOrUpdate(PrintingProductBindingModel model)
         {
-            PrintingProduct element = source.PrintingProducts.FirstOrDefault(rec => rec.PrintingProductName == model.PrintingProductName && rec.Id != model.Id);
-            if (element != null)
+            PrintingProduct tempPrintingProduct = model.Id.HasValue ? null : new PrintingProduct { Id = 1 };
+            foreach (var printingProduct in source.PrintingProducts)
             {
-                throw new Exception("Уже есть изделие с таким названием");
+                if (printingProduct.PrintingProductName == model.PrintingProductName && printingProduct.Id != model.Id)
+                {
+                    throw new Exception("Уже есть мебель с таким названием");
+                }
+                if (!model.Id.HasValue && printingProduct.Id >= tempPrintingProduct.Id)
+                {
+                    tempPrintingProduct.Id = printingProduct.Id + 1;
+                }
+                else if (model.Id.HasValue && printingProduct.Id == model.Id)
+                {
+                    tempPrintingProduct = printingProduct;
+                }
             }
             if (model.Id.HasValue)
             {
-                element = source.PrintingProducts.FirstOrDefault(rec => rec.Id == model.Id);
-                if (element == null)
+                if (tempPrintingProduct == null)
                 {
                     throw new Exception("Элемент не найден");
                 }
+                CreateModel(model, tempPrintingProduct);
             }
             else
             {
-                int maxId = source.PrintingProducts.Count > 0 ? source.Components.Max(rec => rec.Id) : 0;
-                element = new PrintingProduct { Id = maxId + 1 };
-                source.PrintingProducts.Add(element);
-            }
-            element.PrintingProductName = model.PrintingProductName;
-            element.Price = model.Price;
-            // удалили те, которых нет в модели
-            source.PrintingProductComponents.RemoveAll(rec => rec.PrintingProductId == model.Id && !model.PrintingComponents.ContainsKey(rec.ComponentId));
-            // обновили количество у существующих записей
-            var updateComponents = source.PrintingProductComponents.Where(rec => rec.PrintingProductId == model.Id && model.PrintingComponents.ContainsKey(rec.ComponentId));
-            foreach (var updateComponent in updateComponents)
-            {
-                updateComponent.Count = model.PrintingComponents[updateComponent.ComponentId].Item2;
-                model.PrintingComponents.Remove(updateComponent.ComponentId);
-            }
-            // добавили новые
-            int maxPCId = source.PrintingProductComponents.Count > 0 ? source.PrintingProductComponents.Max(rec => rec.Id) : 0;
-            foreach (var pc in model.PrintingComponents)
-            {
-                source.PrintingProductComponents.Add(new PrintingComponent
-                {
-                    Id = ++maxPCId,
-                    PrintingProductId = element.Id,
-                    ComponentId = pc.Key,
-                    Count = pc.Value.Item2
-                });
+                source.PrintingProducts.Add(CreateModel(model, tempPrintingProduct));
             }
         }
         public void Delete(PrintingProductBindingModel model)
         {
-            // удаяем записи по компонентам при удалении изделия
-            source.PrintingProductComponents.RemoveAll(rec => rec.PrintingProductId == model.Id);
-            PrintingProduct element = source.PrintingProducts.FirstOrDefault(rec => rec.Id == model.Id);
-            if (element != null)
+            for (int i = 0; i < source.PrintingComponents.Count; ++i)
             {
-                source.PrintingProducts.Remove(element);
+                if (source.PrintingComponents[i].PrintingProductId == model.Id)
+                {
+                    source.PrintingComponents.RemoveAt(i--);
+                }
             }
-            else
+            for (int i = 0; i < source.PrintingProducts.Count; ++i)
             {
-                throw new Exception("Элемент не найден");
+                if (source.PrintingProducts[i].Id == model.Id)
+                {
+                    source.PrintingProducts.RemoveAt(i);
+                    return;
+                }
             }
+            throw new Exception("Элемент не найден");
+        }
+        private PrintingProduct CreateModel(PrintingProductBindingModel model, PrintingProduct mebel)
+        {
+            mebel.PrintingProductName = model.PrintingProductName;
+            mebel.Price = model.Price;
+            int maxPCId = 0;
+            for (int i = 0; i < source.PrintingComponents.Count; ++i)
+            {
+                if (source.PrintingComponents[i].Id > maxPCId)
+                {
+                    maxPCId = source.PrintingComponents[i].Id;
+                }
+                if (source.PrintingComponents[i].PrintingProductId == mebel.Id)
+                {
+                    if
+                    (model.PrintingComponents.ContainsKey(source.PrintingComponents[i].ComponentId))
+                    {
+                        source.PrintingComponents[i].Count =
+                        model.PrintingComponents[source.PrintingComponents[i].ComponentId].Item2;
+                        model.PrintingComponents.Remove(source.PrintingComponents[i].ComponentId);
+                    }
+                    else
+                    {
+                        source.PrintingComponents.RemoveAt(i--);
+                    }
+                }
+            }
+            foreach (var pc in model.PrintingComponents)
+            {
+                source.PrintingComponents.Add(new PrintingComponent
+                {
+                    Id = ++maxPCId,
+                    PrintingProductId = mebel.Id,
+                    ComponentId = pc.Key,
+                    Count = pc.Value.Item2
+                });
+            }
+            return mebel;
         }
         public List<PrintingProductViewModel> Read(PrintingProductBindingModel model)
         {
-            return source.PrintingProducts
-            .Where(rec => model == null || rec.Id == model.Id)
-            .Select(rec => new PrintingProductViewModel
+            List<PrintingProductViewModel> result = new List<PrintingProductViewModel>();
+            foreach (var component in source.PrintingProducts)
             {
-                Id = rec.Id,
-                PrintingProductName = rec.PrintingProductName,
-                Price = rec.Price,
-                PrintingComponents = source.PrintingProductComponents
-            .Where(recPC => recPC.PrintingProductId == rec.Id)
-            .ToDictionary(recPC => recPC.ComponentId, recPC =>
-            (source.Components.FirstOrDefault(recC => recC.Id == recPC.ComponentId)?.ComponentName, recPC.Count))
-            })
-            .ToList();
+                if (model != null)
+                {
+                    if (component.Id == model.Id)
+                    {
+                        result.Add(CreateViewModel(component));
+                        break;
+                    }
+                    continue;
+                }
+                result.Add(CreateViewModel(component));
+            }
+            return result;
+        }
+        private PrintingProductViewModel CreateViewModel(PrintingProduct printingProduct)
+        {
+            Dictionary<int, (string, int)> printingComponents = new Dictionary<int, (string, int)>();
+            foreach (var pc in source.PrintingComponents)
+            {
+                if (pc.PrintingProductId == printingProduct.Id)
+                {
+                    string componentName = string.Empty;
+                    foreach (var component in source.Components)
+                    {
+                        if (pc.ComponentId == component.Id)
+                        {
+                            componentName = component.ComponentName;
+                            break;
+                        }
+                    }
+                    printingComponents.Add(pc.ComponentId, (componentName, pc.Count));
+                }
+            }
+            return new PrintingProductViewModel
+            {
+                Id = printingProduct.Id,
+                PrintingProductName = printingProduct.PrintingProductName,
+                Price = printingProduct.Price,
+                PrintingComponents = printingComponents
+            };
         }
     }
 }

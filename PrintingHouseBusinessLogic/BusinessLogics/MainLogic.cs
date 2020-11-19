@@ -1,6 +1,8 @@
 ﻿using PrintingHouseBusinessLogic.BindingModels;
 using PrintingHouseBusinessLogic.Enums;
 using PrintingHouseBusinessLogic.Interfaces;
+using PrintingHouseBusinessLogic.HelperModels;
+using PrintingHouseBusinessLogic.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,7 @@ using System.Text;
 
 namespace PrintingHouseBusinessLogic.BusinessLogics
 {
+    // Создание заказа и смена его статусов
     public class MainLogic
     {
         private readonly IOrderLogic orderLogic;
@@ -21,6 +24,8 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
             {
                 PrintingProductId = model.PrintingProductId,
                 Count = model.Count,
+                ClientId = model.ClientId,
+                ClientFIO = model.ClientFIO,
                 Sum = model.Sum,
                 DateCreate = DateTime.Now,
                 Status = OrderStatus.Принят
@@ -28,13 +33,11 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
         }
         public void TakeOrderInWork(ChangeStatusBindingModel model)
         {
-            Console.WriteLine("ML id=" + model.OrderId);
             var order = orderLogic.Read(new OrderBindingModel
             {
                 Id = model.OrderId
             })?[0];
-            Console.WriteLine(order.PrintingProductName+" "+order.Count+" "+order.Status);
-
+            //Console.WriteLine(order.PrintingProductName+" "+order.Count+" "+order.Status);
             if (order == null)
             {
                 throw new Exception("Не найден заказ");
@@ -46,6 +49,8 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
             orderLogic.CreateOrUpdate(new OrderBindingModel
             {
                 Id = order.Id,
+                ClientId = order.ClientId,
+                ClientFIO = order.ClientFIO,
                 PrintingProductId = order.PrintingProductId,
                 Count = order.Count,
                 Sum = order.Sum,
@@ -56,7 +61,6 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
         }
         public void FinishOrder(ChangeStatusBindingModel model)
         {
-            Console.WriteLine("ML id=" + model.OrderId);
             var order = orderLogic.Read(new OrderBindingModel
             {
                 Id = model.OrderId
@@ -72,6 +76,8 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
             orderLogic.CreateOrUpdate(new OrderBindingModel
             {
                 Id = order.Id,
+                ClientId = order.ClientId,
+                ClientFIO = order.ClientFIO,
                 PrintingProductId = order.PrintingProductId,
                 Count = order.Count,
                 Sum = order.Sum,
@@ -97,6 +103,8 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
             orderLogic.CreateOrUpdate(new OrderBindingModel
             {
                 Id = order.Id,
+                ClientId = order.ClientId,
+                ClientFIO = order.ClientFIO,
                 PrintingProductId = order.PrintingProductId,
                 Count = order.Count,
                 Sum = order.Sum,
