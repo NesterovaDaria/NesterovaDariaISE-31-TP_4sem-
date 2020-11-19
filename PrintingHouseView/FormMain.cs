@@ -22,14 +22,17 @@ namespace PrintingHouseView
         private readonly WorkModeling work;
         private readonly IOrderLogic orderLogic;
         private readonly ReportLogic report;
+        private readonly BackUpAbstractLogic backUpAbstractLogic;
 
-        public FormMain(MainLogic logic, ReportLogic report, WorkModeling work, IOrderLogic orderLogic)
+        public FormMain(MainLogic logic, ReportLogic report, WorkModeling work, IOrderLogic orderLogic,
+           BackUpAbstractLogic backUpAbstractLogic)
         {
             InitializeComponent();
             this.logic = logic;
             this.orderLogic = orderLogic;
             this.work = work;
             this.report = report;
+            this.backUpAbstractLogic = backUpAbstractLogic;
         }
         private void FormMain_Load(object sender, EventArgs e)
         {
@@ -39,25 +42,12 @@ namespace PrintingHouseView
         {
             try
             {
-                var list = orderLogic.Read(null);
-                foreach (var l in list)
-                {
-                    Console.WriteLine("ID= " + l.Id + "; Implementer= " + l.ImplementerFIO);
-                }
-                if (list != null)
-                {
-                    dataGridViewMain.DataSource = list;
-                    dataGridViewMain.Columns[0].Visible = false;
-                    dataGridViewMain.Columns[1].Visible = false;
-                    dataGridViewMain.Columns[2].Visible = false;
-                    dataGridViewMain.Columns[3].Visible = false;
-                    dataGridViewMain.Columns[7].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                }
+                Program.ConfigGrid(orderLogic.Read(null), dataGridViewMain);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
-               MessageBoxIcon.Error);
+                 MessageBoxIcon.Error);
             }
         }
         private void КомпонентыToolStripMenuItem_Click(object sender, EventArgs e)
@@ -205,5 +195,24 @@ namespace PrintingHouseView
             form.ShowDialog();
         }
 
+        private void создатьБекапToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (backUpAbstractLogic != null)
+                {
+                    var fbd = new FolderBrowserDialog();
+                    if (fbd.ShowDialog() == DialogResult.OK)
+                    {
+                        backUpAbstractLogic.CreateArchive(fbd.SelectedPath);
+                        MessageBox.Show("Бекап создан", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
