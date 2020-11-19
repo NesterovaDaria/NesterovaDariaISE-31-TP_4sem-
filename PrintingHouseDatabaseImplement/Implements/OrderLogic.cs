@@ -17,6 +17,7 @@ namespace PrintingHouseDatabaseImplement.Implements
         {
             using (var context = new PrintingHouseDatabase())
             {
+                Console.WriteLine("Id= " + model.Id);
                 Order element;
                 if (model.Id.HasValue)
                 {
@@ -62,10 +63,11 @@ namespace PrintingHouseDatabaseImplement.Implements
             {
                 return context.Orders
                 .Include(rec => rec.PrintingProduct)
-                .Where(rec => model == null || rec.Id == model.Id)
+                .Where(rec => model == null || rec.Id == model.Id || (rec.DateCreate>=model.DateFrom && rec.DateCreate<=model.DateTo))
                 .Select(rec => new OrderViewModel
                 {
-                    Id = rec.PrintingProductId,
+                    Id = rec.Id,
+                    PrintingProductId=rec.PrintingProductId,
                     PrintingProductName = rec.PrintingProduct.PrintingProductName,
                     Count = rec.Count,
                     Sum = rec.Sum,

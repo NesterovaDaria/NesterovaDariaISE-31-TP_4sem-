@@ -20,7 +20,7 @@ namespace PrintingHouseFileImplement.Implements
             PrintingProduct element = source.PrintingProducts.FirstOrDefault(rec => rec.PrintingProductName == model.PrintingProductName && rec.Id != model.Id);
             if (element != null)
             {
-                throw new Exception("Уже есть корабль с таким названием");
+                throw new Exception("Уже есть изделие с таким названием");
             }
             if (model.Id.HasValue)
             {

@@ -20,11 +20,14 @@ namespace PrintingHouseView
         public new IUnityContainer Container { get; set; }
         private readonly MainLogic logic;
         private readonly IOrderLogic orderLogic;
-        public FormMain(MainLogic logic, IOrderLogic orderLogic)
+        private readonly ReportLogic report;
+
+        public FormMain(MainLogic logic, IOrderLogic orderLogic, ReportLogic report)
         {
             InitializeComponent();
             this.logic = logic;
             this.orderLogic = orderLogic;
+            this.report = report;
         }
         private void FormMain_Load(object sender, EventArgs e)
         {
@@ -70,6 +73,7 @@ namespace PrintingHouseView
             if (dataGridViewMain.SelectedRows.Count == 1)
             {
                 int id = Convert.ToInt32(dataGridViewMain.SelectedRows[0].Cells[0].Value);
+                Console.WriteLine(id);
                 try
                 {
                     logic.TakeOrderInWork(new ChangeStatusBindingModel { OrderId = id });
@@ -119,6 +123,48 @@ namespace PrintingHouseView
         private void ButtonUpd_Click(object sender, EventArgs e)
         {
             LoadData();
+        }
+
+        private void списокИзделийToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new SaveFileDialog { Filter = "docx|*.docx" })
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    report.SaveProductsToWordFile(new ReportBindingModel { FileName = dialog.FileName });//!!!!!!!!!!
+                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void списокИзделийСКомпонентамиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormReportPrintingComponents>();
+            form.ShowDialog();
+        }
+
+        private void списокЗаказовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormReportOrders>();
+            form.ShowDialog();
+        }
+
+        private void buttonDel_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewMain.SelectedRows.Count == 1)
+            {
+                int id = Convert.ToInt32(dataGridViewMain.SelectedRows[0].Cells[0].Value);
+                try
+                {
+                    logic.Delete(new ChangeStatusBindingModel { OrderId = id });
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
+                   MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }
