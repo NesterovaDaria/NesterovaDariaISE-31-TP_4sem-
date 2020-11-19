@@ -3,6 +3,7 @@ using PrintingHouseBusinessLogic.Enums;
 using PrintingHouseBusinessLogic.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace PrintingHouseBusinessLogic.BusinessLogics
@@ -27,10 +28,13 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
         }
         public void TakeOrderInWork(ChangeStatusBindingModel model)
         {
+            Console.WriteLine("ML id=" + model.OrderId);
             var order = orderLogic.Read(new OrderBindingModel
             {
                 Id = model.OrderId
             })?[0];
+            Console.WriteLine(order.PrintingProductName+" "+order.Count+" "+order.Status);
+
             if (order == null)
             {
                 throw new Exception("Не найден заказ");
@@ -52,6 +56,7 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
         }
         public void FinishOrder(ChangeStatusBindingModel model)
         {
+            Console.WriteLine("ML id=" + model.OrderId);
             var order = orderLogic.Read(new OrderBindingModel
             {
                 Id = model.OrderId
@@ -98,6 +103,21 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
                 DateCreate = order.DateCreate,
                 DateImplement = order.DateImplement,
                 Status = OrderStatus.Оплачен
+            });
+        }
+        public void Delete(ChangeStatusBindingModel model)
+        {
+            var order = orderLogic.Read(new OrderBindingModel
+            {
+                Id = model.OrderId
+            })?[0];
+            if (order == null)
+            {
+                throw new Exception("Не найден заказ");
+            }
+            orderLogic.Delete(new OrderBindingModel
+            {
+                Id = order.Id
             });
         }
     }
