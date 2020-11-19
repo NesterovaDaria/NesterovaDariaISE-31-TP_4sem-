@@ -2,6 +2,7 @@
 using PrintingHouseBusinessLogic.Interfaces;
 using PrintingHouseBusinessLogic.ViewModels;
 using PrintingHouseListImplement.Models;
+using PrintingHouseBusinessLogic.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +20,7 @@ namespace PrintingHouseListImplement.Implements
 
         public void CreateOrUpdate(OrderBindingModel model)
         {
-            Order tempOrder = model.Id.HasValue ? null : new Order
-            {
-                Id = 1
-            };
+            Order tempOrder = model.Id.HasValue ? null : new Order { Id = 1 };
             foreach (var order in source.Orders)
             {
                 if (!model.Id.HasValue && order.Id >= tempOrder.Id)
@@ -52,7 +50,7 @@ namespace PrintingHouseListImplement.Implements
         {
             for (int i = 0; i < source.Orders.Count; ++i)
             {
-                if (source.Orders[i].Id == model.Id.Value)
+                if (source.Orders[i].Id == model.Id)
                 {
                     source.Orders.RemoveAt(i);
                     return;
@@ -61,53 +59,67 @@ namespace PrintingHouseListImplement.Implements
             throw new Exception("Элемент не найден");
         }
 
+        private Order CreateModel(OrderBindingModel model, Order order)
+        {
+            order.PrintingProductId = model.PrintingProductId;
+            order.Count = model.Count;
+            order.ClientId = (int)model.ClientId;
+            order.DateCreate = model.DateCreate;
+            order.DateImplement = model.DateImplement;
+            order.Sum = model.Sum;
+            order.Status = model.Status;
+
+            return order;
+        }
+
         public List<OrderViewModel> Read(OrderBindingModel model)
         {
             List<OrderViewModel> result = new List<OrderViewModel>();
             foreach (var order in source.Orders)
             {
-                if (model != null)
+                if (
+                    model != null && order.Id == model.Id
+                    || model.DateFrom.HasValue && model.DateTo.HasValue && order.DateCreate >= model.DateFrom && order.DateCreate <= model.DateTo
+                    || model.ClientId.HasValue && order.ClientId == model.ClientId
+                    || model.FreeOrders.HasValue && model.FreeOrders.Value
+                    || model.ImplementerId.HasValue && order.ImplementerId == model.ImplementerId && order.Status == OrderStatus.Выполняется
+                )
                 {
-                    if (order.Id == model.Id && order.ClientId == model.ClientId)
-                    {
-                        result.Add(CreateViewModel(order));
-                        break;
-                    }
-                    continue;
+                    result.Add(CreateViewModel(order));
+                    break;
                 }
                 result.Add(CreateViewModel(order));
             }
             return result;
         }
 
-        private Order CreateModel(OrderBindingModel model, Order order)
-        {
-            order.Count = model.Count;
-            order.ClientId = model.ClientId;
-            order.ClientFIO = model.ClientFIO;
-            order.DateCreate = model.DateCreate;
-            order.DateImplement = model.DateImplement;
-            order.PrintingProductId = model.PrintingProductId;
-            order.Status = model.Status;
-            order.Sum = model.Sum;
-            return order;
-        }
-
         private OrderViewModel CreateViewModel(Order order)
         {
-            var printingProductName = source.PrintingProducts.FirstOrDefault((n) => n.Id == order.PrintingProductId).PrintingProductName;
+            string productName = null;
+
+            foreach (var product in source.PrintingProducts)
+            {
+                if (product.Id == order.PrintingProductId)
+                {
+                    productName = product.PrintingProductName;
+                }
+            }
+
+            if (productName == null)
+            {
+                throw new Exception("Продукт не найден");
+            }
             return new OrderViewModel
             {
                 Id = order.Id,
-                Count = order.Count,
                 ClientId = order.ClientId,
-                ClientFIO = order.ClientFIO,
-                DateCreate = order.DateCreate,
-                DateImplement = order.DateImplement,
-                PrintingProductName = printingProductName,
                 PrintingProductId = order.PrintingProductId,
+                PrintingProductName = productName,
+                Count = order.Count,
+                Sum = order.Sum,
                 Status = order.Status,
-                Sum = order.Sum
+                DateCreate = order.DateCreate,
+                DateImplement = order.DateImplement
             };
         }
     }

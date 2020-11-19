@@ -318,19 +318,17 @@
   <ItemGroup>
     <Compile Include="Implements\ClientLogic.cs" />
     <Compile Include="Implements\ComponentLogic.cs" />
+    <Compile Include="Implements\ImplementerLogic.cs" />
     <Compile Include="Implements\OrderLogic.cs" />
     <Compile Include="Implements\PrintingProductLogic.cs" />
-    <Compile Include="Migrations\20201026111244_InitialCreate.cs" />
-    <Compile Include="Migrations\20201026111244_InitialCreate.designer.cs">
-      <DependentUpon>20201026111244_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20201115152012_PrintingHouseClient.cs" />
-    <Compile Include="Migrations\20201115152012_PrintingHouseClient.designer.cs">
-      <DependentUpon>20201115152012_PrintingHouseClient.cs</DependentUpon>
+    <Compile Include="Migrations\20201117102656_AddImplementer.cs" />
+    <Compile Include="Migrations\20201117102656_AddImplementer.designer.cs">
+      <DependentUpon>20201117102656_AddImplementer.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\PrintingHouseDatabaseModelSnapshot.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\Component.cs" />
+    <Compile Include="Models\Implementer.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\PrintingComponent.cs" />
     <Compile Include="Models\PrintingProduct.cs" />
@@ -363,6 +361,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

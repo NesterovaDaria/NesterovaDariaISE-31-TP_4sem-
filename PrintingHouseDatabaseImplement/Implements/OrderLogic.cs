@@ -2,6 +2,7 @@
 using PrintingHouseBusinessLogic.Interfaces;
 using PrintingHouseBusinessLogic.ViewModels;
 using PrintingHouseDatabaseImplement.Models;
+using PrintingHouseBusinessLogic.Enums;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -13,32 +14,35 @@ namespace PrintingHouseDatabaseImplement.Implements
 {
     public class OrderLogic : IOrderLogic
     {
-        //private readonly PrintingHouseDatabase source;
         public void CreateOrUpdate(OrderBindingModel model)
         {
-            Console.WriteLine("Ordtr logic fio= " + model.ClientFIO);
             using (var context = new PrintingHouseDatabase())
             {
-                Order order;
+                Order element;
                 if (model.Id.HasValue)
                 {
-                    order = context.Orders.ToList().FirstOrDefault(rec => rec.Id == model.Id);
-                    if (order == null)
+                    element = context.Orders.FirstOrDefault(rec => rec.Id == model.Id);
+
+                    if (element == null)
+                    {
                         throw new Exception("Элемент не найден");
+                    }
                 }
                 else
                 {
-                    order = new Order();
-                    context.Orders.Add(order);
+                    element = new Order();
+                    context.Orders.Add(element);
                 }
-                order.PrintingProductId = model.PrintingProductId;
-                order.ClientFIO = model.ClientFIO;
-                order.ClientId = model.ClientId;
-                order.Count = model.Count;
-                order.DateCreate = model.DateCreate;
-                order.DateImplement = model.DateImplement;
-                order.Status = model.Status;
-                order.Sum = model.Sum;
+
+                element.PrintingProductId = model.PrintingProductId == 0 ? element.PrintingProductId : model.PrintingProductId;
+                element.ClientId = model.ClientId.Value;
+                element.ClientFIO = context.Clients.FirstOrDefault(rec => rec.Id == model.ClientId).FIO;
+                element.ImplementerId = model.ImplementerId;
+                element.Count = model.Count;
+                element.Sum = model.Sum;
+                element.Status = model.Status;
+                element.DateCreate = model.DateCreate;
+                element.DateImplement = model.DateImplement;
                 context.SaveChanges();
             }
         }
@@ -47,16 +51,16 @@ namespace PrintingHouseDatabaseImplement.Implements
         {
             using (var context = new PrintingHouseDatabase())
             {
-                Order order = context.Orders.FirstOrDefault(rec => rec.Id == model.Id);
-                if (order != null)
+                Order element = context.Orders.FirstOrDefault(rec => rec.Id == model.Id);
+                if (element != null)
                 {
-                    context.Orders.Remove(order);
+                    context.Orders.Remove(element);
+                    context.SaveChanges();
                 }
                 else
                 {
                     throw new Exception("Элемент не найден");
                 }
-                context.SaveChanges();
             }
         }
 
@@ -64,21 +68,33 @@ namespace PrintingHouseDatabaseImplement.Implements
         {
             using (var context = new PrintingHouseDatabase())
             {
-                return context.Orders.Where(rec => model == null || rec.Id == model.Id || (rec.DateCreate >= model.DateFrom)
-                && (rec.DateCreate <= model.DateTo) || model.ClientId == rec.ClientId)
-                .Include(ord => ord.PrintingProduct)
-                .Select(rec => new OrderViewModel()
+                return context.Orders
+                .Where(
+                    rec => model == null
+                    || rec.Id == model.Id && model.Id.HasValue
+                    || model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate >= model.DateFrom && rec.DateCreate <= model.DateTo
+                    || model.ClientId.HasValue && rec.ClientId == model.ClientId
+                    || model.FreeOrders.HasValue && model.FreeOrders.Value && !rec.ImplementerId.HasValue
+                    || model.ImplementerId.HasValue && rec.ImplementerId == model.ImplementerId && rec.Status == OrderStatus.Выполняется
+                )
+                .Include(rec => rec.PrintingProduct)
+                .Include(rec => rec.Client)
+                .Include(rec => rec.Implementer)
+                .Select(rec => new OrderViewModel
                 {
                     Id = rec.Id,
-                    PrintingProductId = rec.PrintingProductId,
-                    ClientFIO = rec.ClientFIO,
                     ClientId = rec.ClientId,
-                    PrintingProductName = rec.PrintingProduct.PrintingProductName,
+                    ImplementerId = rec.ImplementerId,
+                    PrintingProductId = rec.PrintingProductId,
                     Count = rec.Count,
+                    Sum = rec.Sum,
+                    Status = rec.Status,
                     DateCreate = rec.DateCreate,
                     DateImplement = rec.DateImplement,
-                    Status = rec.Status,
-                    Sum = rec.Sum
+                    PrintingProductName = rec.PrintingProduct.PrintingProductName,
+                    ClientFIO = rec.Client.FIO,
+                    //ImplementerFIO = rec.ImplementerId.HasValue ? rec.Implementer.ImplementerFIO : string.Empty,
+                    ImplementerFIO =context.Implementers.FirstOrDefault(imp=>imp.Id==rec.ImplementerId).ImplementerFIO,
                 }).ToList();
             }
         }

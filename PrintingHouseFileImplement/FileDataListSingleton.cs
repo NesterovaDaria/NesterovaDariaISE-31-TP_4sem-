@@ -18,11 +18,13 @@ namespace PrintingHouseFileImplement
         private readonly string OrderFileName = "Order.xml";
         private readonly string PrintingProductFileName = "PrintingProduct.xml";
         private readonly string PrintingComponentFileName = "PrintingComponent.xml";
+        private readonly string ImplementerFileName = "Implementer.xml";
         public List<Component> Components { get; set; }
         public List<Client> Clients { get; set; }
         public List<Order> Orders { get; set; }
         public List<PrintingProduct> PrintingProducts { get; set; }
         public List<PrintingComponent> PrintingComponents { get; set; }
+        public List<Implementer> Implementers { get; set; }
         private FileDataListSingleton()
         {
             Components = LoadComponents();
@@ -30,6 +32,7 @@ namespace PrintingHouseFileImplement
             Orders = LoadOrders();
             PrintingProducts = LoadPrintingProducts();
             PrintingComponents = LoadPrintingComponents();
+            Implementers = LoadImplementers();
         }
         public static FileDataListSingleton GetInstance()
         {
@@ -46,7 +49,32 @@ namespace PrintingHouseFileImplement
             SaveOrders();
             SavePrintingProducts();
             SavePrintingComponents();
+            SaveImplementers();
         }
+        private List<Implementer> LoadImplementers()
+        {
+            var list = new List<Implementer>();
+
+            if (File.Exists(ImplementerFileName))
+            {
+                XDocument xDocument = XDocument.Load(ImplementerFileName);
+                var xElements = xDocument.Root.Elements("Implementer").ToList();
+
+                foreach (var elem in xElements)
+                {
+                    list.Add(new Implementer
+                    {
+                        Id = Convert.ToInt32(elem.Attribute("Id").Value),
+                        ImplementerFIO = elem.Element("ImplementerFIO").Value,
+                        WorkingTime = Convert.ToInt32(elem.Element("WorkingTime").Value),
+                        PauseTime = Convert.ToInt32(elem.Element("PauseTime").Value)
+                    });
+                }
+            }
+
+            return list;
+        }
+    
         private List<Component> LoadComponents()
         {
             var list = new List<Component>();
@@ -242,6 +270,25 @@ namespace PrintingHouseFileImplement
                 }
                 XDocument xDocument = new XDocument(xElement);
                 xDocument.Save(PrintingComponentFileName);
+            }
+        }
+        private void SaveImplementers()
+        {
+            if (Implementers != null)
+            {
+                var xElement = new XElement("Implementers");
+
+                foreach (var implementer in Implementers)
+                {
+                    xElement.Add(new XElement("Implementer",
+                    new XAttribute("Id", implementer.Id),
+                    new XElement("ImplementerFIO", implementer.ImplementerFIO),
+                    new XElement("WorkingTime", implementer.WorkingTime),
+                    new XElement("PauseTime", implementer.PauseTime)));
+                }
+
+                XDocument xDocument = new XDocument(xElement);
+                xDocument.Save(ImplementerFileName);
             }
         }
     }
