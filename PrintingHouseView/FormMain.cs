@@ -19,15 +19,17 @@ namespace PrintingHouseView
         [Dependency]
         public new IUnityContainer Container { get; set; }
         private readonly MainLogic logic;
+        private readonly WorkModeling work;
         private readonly IOrderLogic orderLogic;
         private readonly ReportLogic report;
 
-        public FormMain(MainLogic logic, IOrderLogic orderLogic, ReportLogic report)
+        public FormMain(MainLogic mainLogic, ReportLogic reportLogic, WorkModeling work, IOrderLogic orderLogic)
         {
             InitializeComponent();
-            this.logic = logic;
+            this.logic = mainLogic;
+            this.report = reportLogic;
+            this.work = work;
             this.orderLogic = orderLogic;
-            this.report = report;
         }
         private void FormMain_Load(object sender, EventArgs e)
         {
@@ -38,12 +40,17 @@ namespace PrintingHouseView
             try
             {
                 var list = orderLogic.Read(null);
+                foreach (var l in list)
+                {
+                    Console.WriteLine("ID= " + l.Id + "; Implementer= " + l.ImplementerFIO);
+                }
                 if (list != null)
                 {
                     dataGridViewMain.DataSource = list;
                     dataGridViewMain.Columns[0].Visible = false;
                     dataGridViewMain.Columns[1].Visible = false;
                     dataGridViewMain.Columns[2].Visible = false;
+                    dataGridViewMain.Columns[3].Visible = false;
                     dataGridViewMain.Columns[7].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
@@ -172,6 +179,18 @@ namespace PrintingHouseView
         {
             var form = Container.Resolve<FormClients>();
             form.ShowDialog();
+        }
+
+        private void списокИсполнителейToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormImplementers>();
+            form.ShowDialog();
+        }
+        private void buttonStaerWork_Click(object sender, EventArgs e)
+        {
+            work.DoWork();
+            LoadData();
+            Console.WriteLine("YES");
         }
     }
 }

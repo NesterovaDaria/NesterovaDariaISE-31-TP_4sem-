@@ -14,8 +14,8 @@ namespace PrintingHouseBusinessLogic.BindingModels
     {
         public int? Id { get; set; }
         public int PrintingProductId { get; set; }
-        public int ClientId { set; get; }
-        public string ClientFIO { set; get; }
+        public int? ClientId { set; get; }
+        public int? ImplementerId { get; set; }
         public int Count { get; set; }
         public decimal Sum { get; set; }
         public OrderStatus Status { get; set; }
@@ -23,5 +23,6 @@ namespace PrintingHouseBusinessLogic.BindingModels
         public DateTime? DateImplement { get; set; }
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
+        public bool? FreeOrders { get; set; }
     }
 }

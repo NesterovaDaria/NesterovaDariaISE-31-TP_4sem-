@@ -12,6 +12,7 @@ namespace PrintingHouseDatabaseImplement.Models
     {
         public int Id { get; set; }
         public int ClientId { get; set; }
+        public int? ImplementerId { get; set; }
         public int PrintingProductId { get; set; }
         [Required]
         public string ClientFIO { set; get; }
@@ -26,5 +27,6 @@ namespace PrintingHouseDatabaseImplement.Models
         public DateTime? DateImplement { get; set; }
         public PrintingProduct PrintingProduct { get; set; }
         public Client Client { get; set; }
+        public Implementer Implementer { get; set; }
     }
 }
