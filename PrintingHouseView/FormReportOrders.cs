@@ -57,18 +57,27 @@ namespace PrintingHouseView
             try
             {
                 var dict = logic.GetOrders(new ReportBindingModel { DateFrom = dateTimePickerFrom.Value.Date, DateTo = dateTimePickerTo.Value.Date });
+                List<DateTime> dates = new List<DateTime>();
+                foreach (var order in dict)
+                {
+                    if (!dates.Contains(order.DateCreate.Date))
+                    {
+                        dates.Add(order.DateCreate.Date);
+                    }
+                }
+
                 if (dict != null)
                 {
                     dataGridView.Rows.Clear();
-                    Console.WriteLine(dict.Count);
-                    foreach (var date in dict)
+                    
+                    foreach (var date in dates)
                     {
                         
                         decimal dateSum = 0;
 
-                        dataGridView.Rows.Add(new object[] { date.Key, "", "" });
+                        dataGridView.Rows.Add(new object[] { date.Date, "", "" });
 
-                        foreach (var order in date)
+                        foreach (var order in dict.Where(rec => rec.DateCreate.Date == date.Date))
                         {
                             dataGridView.Rows.Add(new object[] { "", order.PrintingProductName, order.Sum });
                             dateSum += order.Sum;

@@ -60,14 +60,17 @@ namespace PrintingHouseView
         {
             try
             {
+                dataGridViewComponents.Columns.Clear();
+                dataGridViewComponents.Columns.Add("Number", "№");
+                dataGridViewComponents.Columns.Add("Components", "Компоненты");
+                dataGridViewComponents.Columns.Add("Count", "Количество");
+                dataGridViewComponents.Columns[0].Visible = false;
                 if (printingComponents != null)
                 {
                     dataGridViewComponents.Rows.Clear();
-                    foreach (var pc in printingComponents)
-                    {
-                        dataGridViewComponents.Rows.Add(new object[] { pc.Key, pc.Value.Item1,
-                        pc.Value.Item2 });
-                    }
+                    foreach (var pi in printingComponents)
+                        //pi.Key, 
+                        dataGridViewComponents.Rows.Add(new object[] { pi.Value.Item1, pi.Value.Item2 });
                 }
             }
             catch (Exception ex)

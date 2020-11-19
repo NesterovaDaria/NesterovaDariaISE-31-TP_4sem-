@@ -15,13 +15,12 @@ namespace PrintingHouseBusinessLogic.ViewModels
     {
         [DataMember]
         public int Id { get; set; }
-
         [DataMember]
         public int ClientId { get; set; }
         [DataMember]
-        public int PrintingProductId { get; set; }
-        [DataMember]
         public int? ImplementerId { get; set; }
+        [DataMember]
+        public int PrintingProductId { get; set; }
 
         [DataMember]
         [DisplayName("Клиент")]

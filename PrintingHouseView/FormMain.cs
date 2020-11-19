@@ -23,13 +23,13 @@ namespace PrintingHouseView
         private readonly IOrderLogic orderLogic;
         private readonly ReportLogic report;
 
-        public FormMain(MainLogic mainLogic, ReportLogic reportLogic, WorkModeling work, IOrderLogic orderLogic)
+        public FormMain(MainLogic logic, ReportLogic report, WorkModeling work, IOrderLogic orderLogic)
         {
             InitializeComponent();
-            this.logic = mainLogic;
-            this.report = reportLogic;
-            this.work = work;
+            this.logic = logic;
             this.orderLogic = orderLogic;
+            this.work = work;
+            this.report = report;
         }
         private void FormMain_Load(object sender, EventArgs e)
         {
@@ -191,6 +191,19 @@ namespace PrintingHouseView
             work.DoWork();
             LoadData();
             Console.WriteLine("YES");
+        }       
+        //Отдать в работу
+        private void buttonStartWork_Click(object sender, EventArgs e)
+        {
+            work.DoWork();
+            LoadData();
         }
+        //сообщения
+        private void buttonMessages_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormMessages>();
+            form.ShowDialog();
+        }
+
     }
 }

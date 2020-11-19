@@ -17,17 +17,14 @@ namespace PrintingHouseClientView
         static void Main()
         {
             APIClient.Connect();
-            if (APIClient.GetContact() == true)
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            var form = new FormEnter();
+            form.ShowDialog();
+            if (Client != null)
             {
-                Application.SetHighDpiMode(HighDpiMode.SystemAware);
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                var form = new FormEnter();
-                form.ShowDialog();
-                if (Client != null)
-                {
-                    Application.Run(new FormMain());
-                }
+                Application.Run(new FormMain());
             }
         }
     }

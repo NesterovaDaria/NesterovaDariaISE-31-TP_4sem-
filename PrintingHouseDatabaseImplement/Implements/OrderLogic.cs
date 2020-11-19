@@ -14,6 +14,7 @@ namespace PrintingHouseDatabaseImplement.Implements
 {
     public class OrderLogic : IOrderLogic
     {
+        private readonly PrintingHouseDatabase source;
         public void CreateOrUpdate(OrderBindingModel model)
         {
             using (var context = new PrintingHouseDatabase())
@@ -36,7 +37,6 @@ namespace PrintingHouseDatabaseImplement.Implements
 
                 element.PrintingProductId = model.PrintingProductId == 0 ? element.PrintingProductId : model.PrintingProductId;
                 element.ClientId = model.ClientId.Value;
-                element.ClientFIO = context.Clients.FirstOrDefault(rec => rec.Id == model.ClientId).FIO;
                 element.ImplementerId = model.ImplementerId;
                 element.Count = model.Count;
                 element.Sum = model.Sum;
@@ -69,33 +69,33 @@ namespace PrintingHouseDatabaseImplement.Implements
             using (var context = new PrintingHouseDatabase())
             {
                 return context.Orders
-                .Where(
-                    rec => model == null
-                    || rec.Id == model.Id && model.Id.HasValue
-                    || model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate >= model.DateFrom && rec.DateCreate <= model.DateTo
-                    || model.ClientId.HasValue && rec.ClientId == model.ClientId
-                    || model.FreeOrders.HasValue && model.FreeOrders.Value && !rec.ImplementerId.HasValue
-                    || model.ImplementerId.HasValue && rec.ImplementerId == model.ImplementerId && rec.Status == OrderStatus.Выполняется
-                )
-                .Include(rec => rec.PrintingProduct)
-                .Include(rec => rec.Client)
-                .Include(rec => rec.Implementer)
-                .Select(rec => new OrderViewModel
-                {
-                    Id = rec.Id,
-                    ClientId = rec.ClientId,
-                    ImplementerId = rec.ImplementerId,
-                    PrintingProductId = rec.PrintingProductId,
-                    Count = rec.Count,
-                    Sum = rec.Sum,
-                    Status = rec.Status,
-                    DateCreate = rec.DateCreate,
-                    DateImplement = rec.DateImplement,
-                    PrintingProductName = rec.PrintingProduct.PrintingProductName,
-                    ClientFIO = rec.Client.FIO,
-                    //ImplementerFIO = rec.ImplementerId.HasValue ? rec.Implementer.ImplementerFIO : string.Empty,
-                    ImplementerFIO =context.Implementers.FirstOrDefault(imp=>imp.Id==rec.ImplementerId).ImplementerFIO,
-                }).ToList();
+               .Where(
+                   rec => model == null
+                   || rec.Id == model.Id && model.Id.HasValue
+                   || model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate >= model.DateFrom && rec.DateCreate <= model.DateTo
+                   || model.ClientId.HasValue && rec.ClientId == model.ClientId
+                   || model.FreeOrders.HasValue && model.FreeOrders.Value && !rec.ImplementerId.HasValue
+                   || model.ImplementerId.HasValue && rec.ImplementerId == model.ImplementerId && rec.Status == OrderStatus.Выполняется
+               )
+               .Include(rec => rec.PrintingProduct)
+               .Include(rec => rec.Client)
+               .Include(rec => rec.Implementer)
+               .Select(rec => new OrderViewModel
+               {
+                   Id = rec.Id,
+                   ClientId = rec.ClientId,
+                   ImplementerId = rec.ImplementerId,
+                   PrintingProductId = rec.PrintingProductId,
+                   Count = rec.Count,
+                   Sum = rec.Sum,
+                   Status = rec.Status,
+                   DateCreate = rec.DateCreate,
+                   DateImplement = rec.DateImplement,
+                   PrintingProductName = rec.PrintingProduct.PrintingProductName,
+                   ClientFIO = rec.Client.FIO,
+                   ImplementerFIO = rec.ImplementerId.HasValue ? rec.Implementer.ImplementerFIO : string.Empty,
+               })
+               .ToList();
             }
         }
     }

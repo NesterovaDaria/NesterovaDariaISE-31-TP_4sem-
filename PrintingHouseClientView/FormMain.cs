@@ -29,7 +29,8 @@ namespace PrintingHouseClientView
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
+               MessageBoxIcon.Error);
             }
         }
 
@@ -53,5 +54,11 @@ namespace PrintingHouseClientView
         {
             LoadList();
         }
+        private void MessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new FormMessages();
+            form.ShowDialog();
+        }
+
     }
 }

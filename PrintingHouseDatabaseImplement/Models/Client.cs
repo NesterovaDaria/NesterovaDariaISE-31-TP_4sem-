@@ -19,5 +19,7 @@ namespace PrintingHouseDatabaseImplement.Models
         public string Password { get; set; }
         [ForeignKey("ClientId")]
         public virtual List <Order> Orders { set; get; }
+        public virtual List<MessageInfo> MessageInfos { set; get; }
+
     }
 }

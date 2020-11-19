@@ -42,7 +42,7 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
         /// <param name="orders"></param>
         private async void WorkerWorkAsync(ImplementerViewModel implementer, List<OrderViewModel> orders)
         {
-            Console.WriteLine("WorkerWorkAsync");
+            
             // ищем заказы, которые уже в работе (вдруг исполнителя прервали)
             var runOrders = await Task.Run(() => orderLogic.Read(new OrderBindingModel { ImplementerId = implementer.Id }));
             foreach (var order in runOrders)
