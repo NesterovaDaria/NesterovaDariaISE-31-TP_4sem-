@@ -9,7 +9,6 @@ namespace PrintingHouseBusinessLogic.BindingModels
     /// <summary>     
     /// Заказ     
     /// </summary> 
-    [DataContract]
     public class OrderBindingModel
     {
         public int? Id { get; set; }

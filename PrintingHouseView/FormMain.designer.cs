@@ -44,7 +44,8 @@
             this.buttonOrderIsPaid = new System.Windows.Forms.Button();
             this.buttonUpdateList = new System.Windows.Forms.Button();
             this.buttonDel = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonStartWork = new System.Windows.Forms.Button();
+            this.buttonMessages = new System.Windows.Forms.Button();
             this.menuStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             this.SuspendLayout();
@@ -70,7 +71,7 @@
             this.списокКлиентовToolStripMenuItem,
             this.списокИсполнителейToolStripMenuItem});
             this.справочникиToolStripMenuItem.Name = "справочникиToolStripMenuItem";
-            this.справочникиToolStripMenuItem.Size = new System.Drawing.Size(117, 26);
+            this.справочникиToolStripMenuItem.Size = new System.Drawing.Size(117, 24);
             this.справочникиToolStripMenuItem.Text = "Справочники";
             // 
             // компонентыToolStripMenuItem
@@ -104,7 +105,7 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(14, 26);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(14, 24);
             // 
             // отчётыToolStripMenuItem
             // 
@@ -113,7 +114,7 @@
             this.списокИзделийСКомпонентамиToolStripMenuItem,
             this.списокЗаказовToolStripMenuItem});
             this.отчётыToolStripMenuItem.Name = "отчётыToolStripMenuItem";
-            this.отчётыToolStripMenuItem.Size = new System.Drawing.Size(73, 26);
+            this.отчётыToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
             this.отчётыToolStripMenuItem.Text = "Отчёты";
             // 
             // списокИзделийToolStripMenuItem
@@ -189,7 +190,7 @@
             // buttonDel
             // 
             this.buttonDel.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.buttonDel.Location = new System.Drawing.Point(879, 360);
+            this.buttonDel.Location = new System.Drawing.Point(879, 351);
             this.buttonDel.Name = "buttonDel";
             this.buttonDel.Size = new System.Drawing.Size(197, 23);
             this.buttonDel.TabIndex = 7;
@@ -197,24 +198,37 @@
             this.buttonDel.UseVisualStyleBackColor = true;
             this.buttonDel.Click += new System.EventHandler(this.buttonDel_Click);
             // 
-            // button1
+            // buttonStartWork
             // 
-            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.button1.Location = new System.Drawing.Point(879, 140);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(197, 28);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "Взять в работу";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.buttonStaerWork_Click);
+            this.buttonStartWork.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.buttonStartWork.Location = new System.Drawing.Point(879, 140);
+            this.buttonStartWork.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonStartWork.Name = "buttonStartWork";
+            this.buttonStartWork.Size = new System.Drawing.Size(197, 28);
+            this.buttonStartWork.TabIndex = 8;
+            this.buttonStartWork.Text = "Взять в работу";
+            this.buttonStartWork.UseVisualStyleBackColor = true;
+            this.buttonStartWork.Click += new System.EventHandler(this.buttonStartWork_Click);
+            // 
+            // buttonMessages
+            // 
+            this.buttonMessages.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.buttonMessages.Location = new System.Drawing.Point(879, 412);
+            this.buttonMessages.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonMessages.Name = "buttonMessages";
+            this.buttonMessages.Size = new System.Drawing.Size(197, 28);
+            this.buttonMessages.TabIndex = 9;
+            this.buttonMessages.Text = "Сообщения";
+            this.buttonMessages.UseVisualStyleBackColor = true;
+            this.buttonMessages.Click += new System.EventHandler(this.buttonMessages_Click);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1092, 453);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.buttonMessages);
+            this.Controls.Add(this.buttonStartWork);
             this.Controls.Add(this.buttonDel);
             this.Controls.Add(this.buttonUpdateList);
             this.Controls.Add(this.buttonOrderIsPaid);
@@ -252,6 +266,7 @@
         private System.Windows.Forms.Button buttonDel;
         private System.Windows.Forms.ToolStripMenuItem списокКлиентовToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem списокИсполнителейToolStripMenuItem;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonStartWork;
+        private System.Windows.Forms.Button buttonMessages;
     }
 }

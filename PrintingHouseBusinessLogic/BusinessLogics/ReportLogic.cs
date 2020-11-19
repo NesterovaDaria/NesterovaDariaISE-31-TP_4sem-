@@ -10,7 +10,7 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
 {
     public class ReportLogic
     {
-         private readonly IComponentLogic componentLogic;
+        private readonly IComponentLogic componentLogic;
         private readonly IPrintingProductLogic productLogic;
         private readonly IOrderLogic orderLogic;
         public ReportLogic(IPrintingProductLogic productLogic, IComponentLogic componentLogic, IOrderLogic orderLogic)
@@ -25,21 +25,24 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
         /// <returns></returns>
         public List<ReportPrintingComponentViewModel> GetProductComponent()
         {
+            var components = componentLogic.Read(null);
             var products = productLogic.Read(null);
             var list = new List<ReportPrintingComponentViewModel>();
             foreach (var product in products)
             {
-                foreach (var pc in product.PrintingComponents)
+                foreach (var component in components)
                 {
-                   list.Add(new ReportPrintingComponentViewModel
+                    if (product.PrintingComponents.ContainsKey(component.Id))
                     {
-                        PrintingProductName = product.PrintingProductName,
-                        ComponentName = pc.Value.Item1,
-                        Count = pc.Value.Item2
-                    });
-                    //list.Add(record);
+                        list.Add(new ReportPrintingComponentViewModel
+                        {
+                            PrintingProductName = product.PrintingProductName,
+                            ComponentName = component.ComponentName,
+                            Count = product.PrintingComponents[component.Id].Item2
+                        });
+                    }
                 }
-            }
+            }           
             return list;
         }
         /// <summary>
@@ -47,18 +50,23 @@ namespace PrintingHouseBusinessLogic.BusinessLogics
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public List<IGrouping<DateTime, OrderViewModel>> GetOrders(ReportBindingModel model)
+        public List<ReportOrdersViewModel> GetOrders(ReportBindingModel model)
         {
-            var list = orderLogic.Read(new OrderBindingModel
+            return orderLogic.Read(new OrderBindingModel
             {
                 DateFrom = model.DateFrom,
                 DateTo = model.DateTo
             })
-            .GroupBy(rec => rec.DateCreate.Date)
-            .OrderBy(recG => recG.Key)
+            .Select(x => new ReportOrdersViewModel
+            {
+                DateCreate = x.DateCreate,
+                PrintingProductName = x.PrintingProductName,
+                Count = x.Count,
+                Sum = x.Sum,
+                Status = x.Status
+            })
             .ToList();
 
-            return list;
         }
         /// <summary>
         /// Сохранение компонент в файл-Word

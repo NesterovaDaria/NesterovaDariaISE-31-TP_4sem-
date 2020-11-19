@@ -19,12 +19,14 @@ namespace PrintingHouseFileImplement
         private readonly string PrintingProductFileName = "PrintingProduct.xml";
         private readonly string PrintingComponentFileName = "PrintingComponent.xml";
         private readonly string ImplementerFileName = "Implementer.xml";
+        private readonly string MessageInfoFileName = "MessageInfo.xml";
         public List<Component> Components { get; set; }
         public List<Client> Clients { get; set; }
         public List<Order> Orders { get; set; }
         public List<PrintingProduct> PrintingProducts { get; set; }
         public List<PrintingComponent> PrintingComponents { get; set; }
         public List<Implementer> Implementers { get; set; }
+        public List<MessageInfo> MessageInfoes { get; set; }
         private FileDataListSingleton()
         {
             Components = LoadComponents();
@@ -33,6 +35,7 @@ namespace PrintingHouseFileImplement
             PrintingProducts = LoadPrintingProducts();
             PrintingComponents = LoadPrintingComponents();
             Implementers = LoadImplementers();
+            MessageInfoes = LoadMessageInfoes();
         }
         public static FileDataListSingleton GetInstance()
         {
@@ -50,8 +53,33 @@ namespace PrintingHouseFileImplement
             SavePrintingProducts();
             SavePrintingComponents();
             SaveImplementers();
+            SaveMessageInfoes();
         }
-        private List<Implementer> LoadImplementers()
+        private List<MessageInfo> LoadMessageInfoes()
+        {
+            var list = new List<MessageInfo>();
+
+            if (File.Exists(MessageInfoFileName))
+            {
+                XDocument xDocument = XDocument.Load(MessageInfoFileName);
+                var xElements = xDocument.Root.Elements("MessageInfo").ToList();
+
+                foreach (var elem in xElements)
+                {
+                    list.Add(new MessageInfo
+                    {
+                        MessageId = elem.Attribute("MessageId").Value,
+                        ClientId = Convert.ToInt32(elem.Element("ClientId").Value),
+                        SenderName = elem.Element("SenderName").Value,
+                        DateDelivery = Convert.ToDateTime(elem.Element("DateDelivery").Value),
+                        Subject = elem.Element("Subject").Value,
+                        Body = elem.Element("Body").Value
+                    });
+                }
+            }
+            return list;
+        }
+            private List<Implementer> LoadImplementers()
         {
             var list = new List<Implementer>();
 
@@ -218,6 +246,23 @@ namespace PrintingHouseFileImplement
                 xDocument.Save(ClientFileName);
             }
         }
+        private void SaveImplementers()
+        {
+            if (Implementers != null)
+            {
+                var xElement = new XElement("Implementers");
+                foreach (var implementer in Implementers)
+                {
+                    xElement.Add(new XElement("Implementer",
+                    new XAttribute("Id", implementer.Id),
+                    new XElement("ImplementerFIO", implementer.ImplementerFIO),
+                    new XElement("WorkingTime ", implementer.WorkingTime),
+                    new XElement("PauseTime", implementer.PauseTime)));
+                }
+                XDocument xDocument = new XDocument(xElement);
+                xDocument.Save(ImplementerFileName);
+            }
+        }
         private void SaveOrders()
         {
             if (Orders != null)
@@ -272,23 +317,25 @@ namespace PrintingHouseFileImplement
                 xDocument.Save(PrintingComponentFileName);
             }
         }
-        private void SaveImplementers()
+        private void SaveMessageInfoes()
         {
-            if (Implementers != null)
+            if (MessageInfoes!= null)
             {
-                var xElement = new XElement("Implementers");
+                var xElement = new XElement("MessageInfoes");
 
-                foreach (var implementer in Implementers)
+                foreach (var messageInfoes in MessageInfoes)
                 {
-                    xElement.Add(new XElement("Implementer",
-                    new XAttribute("Id", implementer.Id),
-                    new XElement("ImplementerFIO", implementer.ImplementerFIO),
-                    new XElement("WorkingTime", implementer.WorkingTime),
-                    new XElement("PauseTime", implementer.PauseTime)));
+                    xElement.Add(new XElement("MessageInfo",
+                     new XAttribute("Id", messageInfo.MessageId),
+                     new XElement("ClientId", messageInfo.ClientId),
+                     new XElement("SenderName", messageInfo.SenderName),
+                     new XElement("DateDelivery", messageInfo.DateDelivery),
+                     new XElement("Subject", messageInfo.Subject),
+                     new XElement("Body", messageInfo.Body)));
                 }
 
                 XDocument xDocument = new XDocument(xElement);
-                xDocument.Save(ImplementerFileName);
+                xDocument.Save(MessageInfoFileName);
             }
         }
     }

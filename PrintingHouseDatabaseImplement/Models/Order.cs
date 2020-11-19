@@ -15,8 +15,6 @@ namespace PrintingHouseDatabaseImplement.Models
         public int? ImplementerId { get; set; }
         public int PrintingProductId { get; set; }
         [Required]
-        public string ClientFIO { set; get; }
-        [Required]
         public int Count { get; set; }
         [Required]
         public decimal Sum { get; set; }
