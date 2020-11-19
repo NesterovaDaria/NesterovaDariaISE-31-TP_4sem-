@@ -1,4 +1,5 @@
 ﻿using System;
+using PrintingHouseBusinessLogic.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -10,18 +11,23 @@ namespace PrintingHouseBusinessLogic.ViewModels
     /// Изделие, изготавливаемое в типографии
     /// </summary>
     [DataContract]
-    public class PrintingProductViewModel
+    public class PrintingProductViewModel : BaseViewModel
     {
+        [Column(title: "Название изделия", gridViewAutoSize: GridViewAutoSize.Fill)]
         [DataMember]
-        public int Id { get; set; }
-        [DataMember]
-        [DisplayName("Название изделия")]
         public string PrintingProductName { get; set; }
+        [Column(title: "Цена", width: 50)]
         [DataMember]
-        [DisplayName("Цена")]
+       
         public decimal Price { get; set; }
         [DataMember]
         public Dictionary<int, (string, int)> PrintingComponents { get; set; }
+        public override List<string> Properties() => new List<string>
+        {
+            "Id",
+            "PrintingProductName",
+            "Price"
+        };
     }
 }
 

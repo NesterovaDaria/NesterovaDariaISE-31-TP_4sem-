@@ -32,14 +32,7 @@ namespace PrintingHouseView
         {
             try
             {
-                var list = logic.Read(null);
-                if (list != null)
-                {
-                    dataGridViewPrintingProducts.DataSource = list;
-                    dataGridViewPrintingProducts.Columns[0].Visible = false;
-                    dataGridViewPrintingProducts.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    dataGridViewPrintingProducts.Columns[3].Visible = false;
-                }
+                Program.ConfigGrid(logic.Read(null), dataGridViewPrintingProducts);
             }
             catch (Exception ex)
             {

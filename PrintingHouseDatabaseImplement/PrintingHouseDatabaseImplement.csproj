@@ -368,15 +368,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implements\BackUpLogic.cs" />
     <Compile Include="Implements\ClientLogic.cs" />
     <Compile Include="Implements\ComponentLogic.cs" />
     <Compile Include="Implements\ImplementerLogic.cs" />
     <Compile Include="Implements\MessageInfoLogic.cs" />
     <Compile Include="Implements\OrderLogic.cs" />
     <Compile Include="Implements\PrintingProductLogic.cs" />
-    <Compile Include="Migrations\20201119063300_m1.cs" />
-    <Compile Include="Migrations\20201119063300_m1.designer.cs">
-      <DependentUpon>20201119063300_m1.cs</DependentUpon>
+    <Compile Include="Migrations\20201119080639_laba8.cs" />
+    <Compile Include="Migrations\20201119080639_laba8.designer.cs">
+      <DependentUpon>20201119080639_laba8.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\PrintingHouseDatabaseModelSnapshot.cs" />
     <Compile Include="Models\Client.cs" />

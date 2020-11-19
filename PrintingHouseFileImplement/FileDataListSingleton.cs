@@ -167,9 +167,8 @@ namespace PrintingHouseFileImplement
                         Sum = Convert.ToDecimal(elem.Element("Sum").Value),
                         Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), elem.Element("Status").Value),
                         DateCreate = Convert.ToDateTime(elem.Element("DateCreate").Value),
-                        DateImplement =
-                   string.IsNullOrEmpty(elem.Element("DateImplement").Value) ? (DateTime?)null :
-                   Convert.ToDateTime(elem.Element("DateImplement").Value),
+                        DateImplement = string.IsNullOrEmpty(elem.Element("DateImplement").Value) ? (DateTime?)null :
+                        Convert.ToDateTime(elem.Element("DateImplement").Value),
                     });
                 }
             }
@@ -326,12 +325,12 @@ namespace PrintingHouseFileImplement
                 foreach (var messageInfoes in MessageInfoes)
                 {
                     xElement.Add(new XElement("MessageInfo",
-                     new XAttribute("Id", messageInfo.MessageId),
-                     new XElement("ClientId", messageInfo.ClientId),
-                     new XElement("SenderName", messageInfo.SenderName),
-                     new XElement("DateDelivery", messageInfo.DateDelivery),
-                     new XElement("Subject", messageInfo.Subject),
-                     new XElement("Body", messageInfo.Body)));
+                     new XAttribute("Id", messageInfoes.MessageId),
+                     new XElement("ClientId", messageInfoes.ClientId),
+                     new XElement("SenderName", messageInfoes.SenderName),
+                     new XElement("DateDelivery", messageInfoes.DateDelivery),
+                     new XElement("Subject", messageInfoes.Subject),
+                     new XElement("Body", messageInfoes.Body)));
                 }
 
                 XDocument xDocument = new XDocument(xElement);

@@ -15,7 +15,7 @@ namespace PrintingHouseDatabaseImplement
         {
             if (optionsBuilder.IsConfigured == false)
             {
-                optionsBuilder.UseSqlServer(@"Data Source=DASHULITI\DASHAMSSQLSERVER;Initial Catalog=PrintingHouseDatabase7;Integrated Security=True;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer(@"Data Source=DASHULITI\DASHAMSSQLSERVER;Initial Catalog=PrintingHouseDatabase8;Integrated Security=True;MultipleActiveResultSets=True;");
             }
             base.OnConfiguring(optionsBuilder);
         }
